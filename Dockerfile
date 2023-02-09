@@ -14,7 +14,7 @@ COPY installer.sh .
 RUN bash installer.sh
 
 # changing workdir
-WORKDIR "/root/ionmusic"
+WORKDIR "/root/exShinzx"
 
 # start the bot.
 CMD ["bash", "startup"]
