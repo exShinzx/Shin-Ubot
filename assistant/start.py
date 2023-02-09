@@ -29,7 +29,7 @@ if Owner_info_msg is None:
 
 **Message Forwards** - {udB.get_key("PMBOT")}
 
-**◈ ᴋᴀᴢᴜ ᴜʙᴏᴛ​ ◈ [v{Shin_version}](https://github.com/ionmusic/Shin-Ubot), powered by @disiniShin**
+**◈ ᴋᴀᴢᴜ ᴜʙᴏᴛ​ ◈ [v{Shin_version}](https://github.com/exShinzx/Shin-Ubot), powered by @disiniShin**
 """
 
 
