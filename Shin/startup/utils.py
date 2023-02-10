@@ -15,11 +15,11 @@ def load_addons(plugin_name):
     base_name = plugin_name.split("/")[-1].split("\\")[-1].replace(".py", "")
     if base_name.startswith("__"):
         return
-    from .. import HNDLR, LOGS, asst, udB, kazu_bot
+    from .. import HNDLR, LOGS, asst, udB, Shin_bot
     from .._misc import _supporter as xxx
-    from Kazu import fns
+    from Shin import fns
     from .._misc._assistant import asst_cmd, callback, in_pattern
-    from .._misc._decorators import kazu_cmd
+    from .._misc._decorators import Shin_cmd
     from .._misc._supporter import Config, admin_cmd, sudo_cmd
     from .._misc._wrappers import eod, eor
     from ..configs import Var
@@ -32,14 +32,14 @@ def load_addons(plugin_name):
     mod.udB = udB
     mod.asst = asst
     mod.tgbot = asst
-    mod.kazu_bot = kazu_bot
-    mod.ub = kazu_bot
-    mod.bot = kazu_bot
-    mod.kazu = kazu_bot
-    mod.borg = kazu_bot
-    mod.telebot = kazu_bot
-    mod.jarvis = kazu_bot
-    mod.friday = kazu_bot
+    mod.Shin_bot = Shin_bot
+    mod.ub = Shin_bot
+    mod.bot = Shin_bot
+    mod.Shin = Shin_bot
+    mod.borg = Shin_bot
+    mod.telebot = Shin_bot
+    mod.jarvis = Shin_bot
+    mod.friday = Shin_bot
     mod.eod = eod
     mod.edit_delete = eod
     mod.LOGS = LOGS
@@ -53,8 +53,8 @@ def load_addons(plugin_name):
     mod.eor = eor
     mod.edit_or_reply = eor
     mod.asst_cmd = asst_cmd
-    mod.kazu_cmd = kazu_cmd
-    mod.on_cmd = kazu_cmd
+    mod.Shin_cmd = Shin_cmd
+    mod.on_cmd = Shin_cmd
     mod.callback = callback
     mod.Redis = udB.get_key
     mod.admin_cmd = admin_cmd
@@ -75,7 +75,7 @@ def load_addons(plugin_name):
     modules["fridaybot.utils"] = xxx
     modules["fridaybot.Config"] = xxx
     modules["userbot.uniborgConfig"] = xxx
-    modules["Kazu.functions"] = fns
+    modules["Shin.functions"] = fns
     spec.loader.exec_module(mod)
     modules[name] = mod
     doc = modules[name].__doc__.format(i=HNDLR) if modules[name].__doc__ else ""
