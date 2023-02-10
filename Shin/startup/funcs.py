@@ -39,18 +39,18 @@ from telethon.tl.types import (
 )
 from telethon.utils import get_peer_id
 
-from .. import LOGS, KazuConfig
+from .. import LOGS, ShinConfig
 from ..fns.helper import download_file, inline_mention, updater
 
 db_url = 0
 
 
 async def autoupdate_local_database():
-    from .. import asst, udB, kazu_bot, Var
+    from .. import asst, udB, Shin_bot, Var
 
     global db_url
     db_url = (
-        udB.get_key("TGDB_URL") or Var.TGDB_URL or kazu_bot._cache.get("TGDB_URL")
+        udB.get_key("TGDB_URL") or Var.TGDB_URL or Shin_bot._cache.get("TGDB_URL")
     )
     if db_url:
         _split = db_url.split("/")
@@ -103,13 +103,13 @@ async def startup_stuff():
     CT = udB.get_key("CUSTOM_THUMBNAIL")
     if CT:
         path = "resources/extras/thumbnail.jpg"
-        KazuConfig.thumb = path
+        ShinConfig.thumb = path
         try:
             await download_file(CT, path)
         except Exception as er:
             LOGS.exception(er)
     elif CT is False:
-        KazuConfig.thumb = None
+        ShinConfig.thumb = None
     GT = udB.get_key("GDRIVE_AUTH_TOKEN")
     if GT:
         with open("resources/auth/gdrive_creds.json", "w") as t_file:
@@ -141,25 +141,25 @@ async def startup_stuff():
 
 
 async def autobot():
-    from .. import udB, kazu_bot
+    from .. import udB, Shin_bot
 
     if udB.get_key("BOT_TOKEN"):
         return
-    await kazu_bot.start()
+    await Shin_bot.start()
     LOGS.info("MEMBUAT BOT TELEGRAM UNTUK ANDA DI @BotFather, Mohon Tunggu")
-    who = kazu_bot.me
+    who = Shin_bot.me
     name = who.first_name + "' Bot"
     if who.username:
         username = who.username + "_bot"
     else:
-        username = "kazu_" + (str(who.id))[5:] + "_bot"
+        username = "Shin_" + (str(who.id))[5:] + "_bot"
     bf = "@BotFather"
-    await kazu_bot(UnblockRequest(bf))
-    await kazu_bot.send_message(bf, "/cancel")
+    await Shin_bot(UnblockRequest(bf))
+    await Shin_bot.send_message(bf, "/cancel")
     await asyncio.sleep(1)
-    await kazu_bot.send_message(bf, "/newbot")
+    await Shin_bot.send_message(bf, "/newbot")
     await asyncio.sleep(1)
-    isdone = (await kazu_bot.get_messages(bf, limit=1))[0].text
+    isdone = (await Shin_bot.get_messages(bf, limit=1))[0].text
     if isdone.startswith("That I cannot do.") or "20 bots" in isdone:
         LOGS.critical(
             "Tolong buat Bot dari @BotFather dan tambahkan tokennya di BOT_TOKEN, sebagai env var dan mulai ulang saya."
@@ -167,13 +167,13 @@ async def autobot():
         import sys
 
         sys.exit(1)
-    await kazu_bot.send_message(bf, name)
+    await Shin_bot.send_message(bf, name)
     await asyncio.sleep(1)
-    isdone = (await kazu_bot.get_messages(bf, limit=1))[0].text
+    isdone = (await Shin_bot.get_messages(bf, limit=1))[0].text
     if not isdone.startswith("Good."):
-        await kazu_bot.send_message(bf, "My Assistant Bot")
+        await Shin_bot.send_message(bf, "My Assistant Bot")
         await asyncio.sleep(1)
-        isdone = (await kazu_bot.get_messages(bf, limit=1))[0].text
+        isdone = (await Shin_bot.get_messages(bf, limit=1))[0].text
         if not isdone.startswith("Good."):
             LOGS.critical(
                 "Tolong buat Bot dari @BotFather dan tambahkan tokennya di BOT_TOKEN, sebagai env var dan mulai ulang saya."
@@ -181,20 +181,20 @@ async def autobot():
             import sys
 
             sys.exit(1)
-    await kazu_bot.send_message(bf, username)
+    await Shin_bot.send_message(bf, username)
     await asyncio.sleep(1)
-    isdone = (await kazu_bot.get_messages(bf, limit=1))[0].text
-    await kazu_bot.send_read_acknowledge("botfather")
+    isdone = (await Shin_bot.get_messages(bf, limit=1))[0].text
+    await Shin_bot.send_read_acknowledge("botfather")
     if isdone.startswith("Sorry,"):
         ran = randint(1, 100)
-        username = "kazu_" + (str(who.id))[6:] + str(ran) + "_bot"
-        await kazu_bot.send_message(bf, username)
+        username = "Shin_" + (str(who.id))[6:] + str(ran) + "_bot"
+        await Shin_bot.send_message(bf, username)
         await asyncio.sleep(1)
-        isdone = (await kazu_bot.get_messages(bf, limit=1))[0].text
+        isdone = (await Shin_bot.get_messages(bf, limit=1))[0].text
     if isdone.startswith("Done!"):
         token = isdone.split("`")[1]
         udB.set_key("BOT_TOKEN", token)
-        await enable_inline(kazu_bot, username)
+        await enable_inline(Shin_bot, username)
         LOGS.info(
             f"Selesai. Berhasil membuat @{username} untuk digunakan sebagai bot asisten Anda!"
         )
@@ -209,13 +209,13 @@ async def autobot():
 
 
 async def autopilot():
-    from .. import asst, udB, kazu_bot
+    from .. import asst, udB, Shin_bot
 
     channel = udB.get_key("LOG_CHANNEL")
     new_channel = None
     if channel:
         try:
-            chat = await kazu_bot.get_entity(channel)
+            chat = await Shin_bot.get_entity(channel)
         except BaseException as err:
             LOGS.exception(err)
             udB.del_key("LOG_CHANNEL")
@@ -223,21 +223,21 @@ async def autopilot():
     if not channel:
 
         async def _save(exc):
-            udB._cache["LOG_CHANNEL"] = kazu_bot.me.id
+            udB._cache["LOG_CHANNEL"] = Shin_bot.me.id
             await asst.send_message(
-                kazu_bot.me.id, f"Gagal Membuat Saluran Log karena {exc}.."
+                Shin_bot.me.id, f"Gagal Membuat Saluran Log karena {exc}.."
             )
 
-        if kazu_bot._bot:
+        if Shin_bot._bot:
             msg_ = "'LOG_CHANNEL' tidak ditemukan! Tambahkan untuk digunakan 'BOTMODE'"
             LOGS.error(msg_)
             return await _save(msg_)
         LOGS.info("Membuat Saluran Log untuk Anda!")
         try:
-            r = await kazu_bot(
+            r = await Shin_bot(
                 CreateChannelRequest(
-                    title="Logs Kazu Ubot",
-                    about="Logs Kazu Ubot \n\n Cʀᴇᴀᴛᴇᴅ Bʏ @kazusupportgrp",
+                    title="Logs Shin Ubot",
+                    about="Logs Shin Ubot \n\n Cʀᴇᴀᴛᴇᴅ Bʏ @Shinsupportgrp",
                     megagroup=True,
                 ),
             )
@@ -259,10 +259,10 @@ async def autopilot():
         udB.set_key("LOG_CHANNEL", channel)
     assistant = True
     try:
-        await kazu_bot.get_permissions(int(channel), asst.me.username)
+        await Shin_bot.get_permissions(int(channel), asst.me.username)
     except UserNotParticipantError:
         try:
-            await kazu_bot(InviteToChannelRequest(int(channel), [asst.me.username]))
+            await Shin_bot(InviteToChannelRequest(int(channel), [asst.me.username]))
         except BaseException as er:
             LOGS.info("Kesalahan saat Menambahkan Asisten ke Saluran Log")
             LOGS.exception(er)
@@ -289,7 +289,7 @@ async def autopilot():
                 manage_call=True,
             )
             try:
-                await kazu_bot(
+                await Shin_bot(
                     EditAdminRequest(
                         int(channel), asst.me.username, rights, "Assistant"
                     )
@@ -305,9 +305,9 @@ async def autopilot():
         photo = await download_file(
             "https://telegra.ph/file/e2f568b76280fadc8ee54.jpg", "logo.jpg"
         )
-        ll = await kazu_bot.upload_file(photo)
+        ll = await Shin_bot.upload_file(photo)
         try:
-            await kazu_bot(
+            await Shin_bot(
                 EditPhotoRequest(int(channel), InputChatUploadedPhoto(ll))
             )
         except BaseException as er:
@@ -319,7 +319,7 @@ async def autopilot():
 
 
 async def customize():
-    from .. import asst, udB, kazu_bot
+    from .. import asst, udB, Shin_bot
 
     rem = None
     try:
@@ -328,10 +328,10 @@ async def customize():
             return
         LOGS.info("Menyesuaikan Bot Asisten di @BOTFATHER")
         UL = f"@{asst.me.username}"
-        if not kazu_bot.me.username:
-            sir = kazu_bot.me.first_name
+        if not Shin_bot.me.username:
+            sir = Shin_bot.me.first_name
         else:
-            sir = f"@{kazu_bot.me.username}"
+            sir = f"@{Shin_bot.me.username}"
         file = random.choice(
             [
                 "https://telegra.ph/file/e2f568b76280fadc8ee54.jpg",
@@ -345,33 +345,33 @@ async def customize():
             chat_id, "**Penyesuaian Otomatis** Dimulai @Botfather"
         )
         await asyncio.sleep(1)
-        await kazu_bot.send_message("botfather", "/cancel")
+        await Shin_bot.send_message("botfather", "/cancel")
         await asyncio.sleep(1)
-        await kazu_bot.send_message("botfather", "/setuserpic")
+        await Shin_bot.send_message("botfather", "/setuserpic")
         await asyncio.sleep(1)
-        isdone = (await kazu_bot.get_messages("botfather", limit=1))[0].text
+        isdone = (await Shin_bot.get_messages("botfather", limit=1))[0].text
         if isdone.startswith("Invalid bot"):
             LOGS.info("Error while trying to customise assistant, skipping...")
             return
-        await kazu_bot.send_message("botfather", UL)
+        await Shin_bot.send_message("botfather", UL)
         await asyncio.sleep(1)
-        await kazu_bot.send_file("botfather", file)
+        await Shin_bot.send_file("botfather", file)
         await asyncio.sleep(2)
-        await kazu_bot.send_message("botfather", "/setabouttext")
+        await Shin_bot.send_message("botfather", "/setabouttext")
         await asyncio.sleep(1)
-        await kazu_bot.send_message("botfather", UL)
+        await Shin_bot.send_message("botfather", UL)
         await asyncio.sleep(1)
-        await kazu_bot.send_message(
+        await Shin_bot.send_message(
             "botfather", f"✨ Hello ✨!! I'm Assistant Bot of {sir}"
         )
         await asyncio.sleep(2)
-        await kazu_bot.send_message("botfather", "/setdescription")
+        await Shin_bot.send_message("botfather", "/setdescription")
         await asyncio.sleep(1)
-        await kazu_bot.send_message("botfather", UL)
+        await Shin_bot.send_message("botfather", UL)
         await asyncio.sleep(1)
-        await kazu_bot.send_message(
+        await Shin_bot.send_message(
             "botfather",
-            f"✨ Powerful Kazu Assistant Bot ✨\n✨ Master ~ {sir} ✨\n\n✨ Powered By ~ @stufsupport ✨",
+            f"✨ Powerful Shin Assistant Bot ✨\n✨ Master ~ {sir} ✨\n\n✨ Powered By ~ @stufsupport ✨",
         )
         await asyncio.sleep(2)
         await msg.edit("Completed **Auto Customisation** at @BotFather.")
@@ -383,10 +383,10 @@ async def customize():
 
 
 async def plug(plugin_channels):
-    from .. import kazu_bot
+    from .. import Shin_bot
     from .utils import load_addons
 
-    if kazu_bot._bot:
+    if Shin_bot._bot:
         LOGS.info("Plugin Channels can't be used in 'BOTMODE'")
         return
     if os.path.exists("addons") and not os.path.exists("addons/.git"):
@@ -395,12 +395,12 @@ async def plug(plugin_channels):
         os.mkdir("addons")
     if not os.path.exists("addons/__init__.py"):
         with open("addons/__init__.py", "w") as f:
-            f.write("from plugins import *\n\nbot = kazu_bot")
+            f.write("from plugins import *\n\nbot = Shin_bot")
     LOGS.info("• Loading Plugins from Plugin Channel(s) •")
     for chat in plugin_channels:
         LOGS.info(f"{'•'*4} {chat}")
         try:
-            async for x in kazu_bot.iter_messages(
+            async for x in Shin_bot.iter_messages(
                 chat, search=".py", filter=InputMessagesFilterDocument, wait_time=10
             ):
                 plugin = "addons/" + x.file.name.replace("_", "-").replace("|", "-")
@@ -412,7 +412,7 @@ async def plug(plugin_channels):
                 try:
                     load_addons(plugin)
                 except Exception as e:
-                    LOGS.info(f"Kazu - PLUGIN_CHANNEL - ERROR - {plugin}")
+                    LOGS.info(f"Shin - PLUGIN_CHANNEL - ERROR - {plugin}")
                     LOGS.exception(e)
                     os.remove(plugin)
         except Exception as er:
@@ -423,24 +423,24 @@ async def plug(plugin_channels):
 
 
 async def ready():
-    from .. import asst, udB, kazu_bot
+    from .. import asst, udB, Shin_bot
     from ..fns.tools import async_searcher
 
     chat_id = udB.get_key("LOG_CHANNEL")
     spam_sent = None
     if not udB.get_key("INIT_DEPLOY"):  # Detailed Message at Initial Deploy
-        MSG = """ **Thanks for Deploying Kazu Ubot!**
+        MSG = """ **Thanks for Deploying Shin Ubot!**
 • Here, are the Some Basic stuff from, where you can Know, about its Usage."""
         PHOTO = "https://telegra.ph/file/e2f568b76280fadc8ee54.jpg"
         BTTS = Button.inline("• Click to Start •", "initft_2")
         udB.set_key("INIT_DEPLOY", "Done")
     else:
-        MSG = f"**Kazu Ubot has been deployed!**\n➖➖➖➖➖➖➖➖➖➖\n**UserMode**: {inline_mention(kazu_bot.me)}\n**Assistant**: @{asst.me.username}\n➖➖➖➖➖➖➖➖➖➖\n**Support**: @kazusupportgrp\n➖➖➖➖➖➖➖➖➖➖"
+        MSG = f"**Shin Ubot has been deployed!**\n➖➖➖➖➖➖➖➖➖➖\n**UserMode**: {inline_mention(Shin_bot.me)}\n**Assistant**: @{asst.me.username}\n➖➖➖➖➖➖➖➖➖➖\n**Support**: @Shinsupportgrp\n➖➖➖➖➖➖➖➖➖➖"
         BTTS, PHOTO = None, None
         prev_spam = udB.get_key("LAST_UPDATE_LOG_SPAM")
         if prev_spam:
             try:
-                await kazu_bot.delete_messages(chat_id, int(prev_spam))
+                await Shin_bot.delete_messages(chat_id, int(prev_spam))
             except Exception as E:
                 LOGS.info("Kesalahan saat Menghapus Pesan Pembaruan Sebelumnya :" + str(E))
         if await updater():
@@ -450,14 +450,14 @@ async def ready():
         spam_sent = await asst.send_message(chat_id, MSG, file=PHOTO, buttons=BTTS)
     except ValueError as e:
         try:
-            await (await kazu_bot.send_message(chat_id, str(e))).delete()
+            await (await Shin_bot.send_message(chat_id, str(e))).delete()
             spam_sent = await asst.send_message(chat_id, MSG, file=PHOTO, buttons=BTTS)
         except Exception as g:
             LOGS.info(g)
     except Exception as el:
         LOGS.info(el)
         try:
-            spam_sent = await kazu_bot.send_message(chat_id, MSG)
+            spam_sent = await Shin_bot.send_message(chat_id, MSG)
         except Exception as ef:
             LOGS.info(ef)
     if spam_sent and not spam_sent.media:
@@ -490,11 +490,11 @@ async def WasItRestart(udb):
     key = udb.get_key("_RESTART")
     if not key:
         return
-    from .. import asst, kazu_bot
+    from .. import asst, Shin_bot
 
     try:
         data = key.split("_")
-        who = asst if data[0] == "bot" else kazu_bot
+        who = asst if data[0] == "bot" else Shin_bot
         await who.edit_message(
             int(data[1]), int(data[2]), "__Restarted Successfully.__"
         )
@@ -526,11 +526,11 @@ def _version_changes(udb):
             udb.set_key(_, new_)
 
 
-async def enable_inline(kazu_bot, username):
+async def enable_inline(Shin_bot, username):
     bf = "BotFather"
-    await kazu_bot.send_message(bf, "/setinline")
+    await Shin_bot.send_message(bf, "/setinline")
     await asyncio.sleep(1)
-    await kazu_bot.send_message(bf, f"@{username}")
+    await Shin_bot.send_message(bf, f"@{username}")
     await asyncio.sleep(1)
-    await kazu_bot.send_message(bf, "Search")
-    await kazu_bot.send_read_acknowledge(bf)
+    await Shin_bot.send_message(bf, "Search")
+    await Shin_bot.send_read_acknowledge(bf)
