@@ -23,7 +23,7 @@ from ..configs import Var
 from . import *
 
 
-class KazuClient(TelegramClient):
+class ShinClient(TelegramClient):
     def __init__(
         self,
         session,
@@ -51,7 +51,7 @@ class KazuClient(TelegramClient):
         self.dc_id = self.session.dc_id
 
     def __repr__(self):
-        return "<Kazu.Client :\n self: {}\n bot: {}\n>".format(
+        return "<Shin.Client :\n self: {}\n bot: {}\n>".format(
             self.full_name, self._bot
         )
 
@@ -130,8 +130,8 @@ class KazuClient(TelegramClient):
                         except FileNotFoundError:
                             pass
                     return files["raw_file"], time.time() - start_time
-        from Kazu.fns.FastTelethon import upload_file
-        from Kazu.fns.helper import progress
+        from Shin.fns.FastTelethon import upload_file
+        from Shin.fns.helper import progress
 
         raw_file = None
         while not raw_file:
@@ -180,8 +180,8 @@ class KazuClient(TelegramClient):
 
         from telethon.tl.types import DocumentAttributeFilename
 
-        from Kazu.fns.FastTelethon import download_file
-        from Kazu.fns.helper import progress
+        from Shin.fns.FastTelethon import download_file
+        from Shin.fns.helper import progress
 
         start_time = time.time()
         # Auto-generate Filename
