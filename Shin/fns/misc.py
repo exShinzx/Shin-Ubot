@@ -14,7 +14,7 @@ from logging import WARNING
 from random import choice, randrange, shuffle
 from traceback import format_exc
 
-from Kazu.exceptions import DependencyMissingError
+from Shin.exceptions import DependencyMissingError
 
 try:
     from aiohttp import ContentTypeError
@@ -69,7 +69,7 @@ except ImportError:
 
 
 async def randomchannel(
-    tochat, channel, range1, range2, caption=None, client=kazu_bot
+    tochat, channel, range1, range2, caption=None, client=Shin_bot
 ):
     do = randrange(range1, range2)
     async for x in client.iter_messages(channel, add_offset=do, limit=1):
@@ -165,8 +165,8 @@ async def allcmds(event, telegraph):
         for zz in LIST[z]:
             txt += HNDLR + zz + "\n"
         txt += "\n\n"
-    t = telegraph.create_page(title="Kazu All Cmds", content=[txt])
-    await eor(event, f"All Kazu Cmds : [Click Here]({t['url']})", link_preview=False)
+    t = telegraph.create_page(title="Shin All Cmds", content=[txt])
+    await eor(event, f"All Shin Cmds : [Click Here]({t['url']})", link_preview=False)
 
 
 async def ReTrieveFile(input_file_name):
@@ -183,7 +183,7 @@ async def ReTrieveFile(input_file_name):
             if "image" not in contentType:
                 return False, (await out.json())
 
-            name = check_filename("kazu-rmbg.png")
+            name = check_filename("Shin-rmbg.png")
             file = await aiofiles.open(name, "wb")
             await file.write(await out.read())
             await file.close()
@@ -285,8 +285,8 @@ INSTA_CLIENT = []
 
 
 async def _insta_login():
-    if "insta_creds" in kazu_bot._cache:
-        return kazu_bot._cache["insta_creds"]
+    if "insta_creds" in Shin_bot._cache:
+        return Shin_bot._cache["insta_creds"]
     username = udB.get_key("INSTA_USERNAME")
     password = udB.get_key("INSTA_PASSWORD")
     if username and password:
@@ -294,7 +294,7 @@ async def _insta_login():
         cl = Client(settings)
         try:
             cl.login(username, password)
-            kazu_bot._cache.update({"insta_creds": cl})
+            Shin_bot._cache.update({"insta_creds": cl})
         except ManualInputRequired:
             LOGS.exception(format_exc())
             # await get_insta_code(cl, username, password)
@@ -308,14 +308,14 @@ async def _insta_login():
             return False
         udB.set_key("INSTA_SET", str(cl.get_settings()))
         cl.logger.setLevel(WARNING)
-        return kazu_bot._cache["insta_creds"]
+        return Shin_bot._cache["insta_creds"]
     return False
 
 
 async def get_insta_code(username, choice):
-    from .. import asst, kazu_bot
+    from .. import asst, Shin_bot
 
-    async with asst.conversation(kazu_bot.uid, timeout=60 * 2) as conv:
+    async with asst.conversation(Shin_bot.uid, timeout=60 * 2) as conv:
         await conv.send_message(
             "Enter The **Instagram Verification Code** Sent to Your Email.."
         )
